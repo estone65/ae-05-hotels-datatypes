@@ -23,6 +23,29 @@ First, knit the document and view the following visualisation. How are the month
 
 **Stretch goal:** If you finish the above task before time is up, change the y-axis label so the values are shown with dollar signs, e.g. $80 instead of 80. You will want to use a function from the **scales** package, see https://scales.r-lib.org/reference/index.html for inspiration and help.
 
+<! the beginning of the {r chunk is just a label, which needs to be unique to each chunk. The rest of it is actual commands –>
+
+```{r myplot, fig.width=10}
+hotels <- hotels %>%
+  mutate(arrival_date_month2 = fct_relevel(factor(arrival_date_month), "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"))
+hotels %>%
+  group_by(hotel, arrival_date_month2) %>%   # group by hotel type and arrival month
+  summarise(mean_adr = mean(adr)) %>%       # calculate mean adr for each group
+  ggplot(aes(
+    x = arrival_date_month2,                 # x-axis = arrival_date_month
+    y = mean_adr,                           # y-axis = mean_adr calculated above
+    group = hotel,                          # group lines by hotel type
+    color = hotel)                          # and color by hotel type
+    ) +
+  geom_line() +                             # use lines to represent data
+  theme_minimal() +                         # use a minimal theme
+  labs(x = "Arrival month",                 # customize labels
+       y = "Mean ADR (average daily rate)",
+       title = "Comparison of resort and city hotel prices across months",
+       subtitle = "Resort hotel prices soar in the summer while ciry hotel prices remain relatively constant throughout the year",
+       color = "Hotel type")
+```
+
 ```{r plot, fig.width=10}
 hotels %>%
   group_by(hotel, arrival_date_month) %>%   # group by hotel type and arrival month
@@ -33,7 +56,7 @@ hotels %>%
     group = hotel,                          # group lines by hotel type
     color = hotel)                          # and color by hotel type
     ) +
-  geom_line() +                             # use lines to represent data
+  geom_line(width=15) +                             # use lines to represent data
   theme_minimal() +                         # use a minimal theme
   labs(x = "Arrival month",                 # customize labels
        y = "Mean ADR (average daily rate)",
